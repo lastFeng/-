@@ -1,0 +1,42 @@
+/**
+ * 题目：
+ *  实现一个栈的逆序操作
+ *  只能用递归函数来实现，不能用其他数据结构
+ *
+ *  思路：
+ *      需要两个递归函数才能实现
+ *      递归函数一： 将栈stack的栈底元素返回并移除
+ *      递归函数二： 逆序一个栈
+ * */
+import java.util.*;
+
+public class reverseStack{
+    // 递归函数一： 将栈stack的栈底元素返回并移除
+    public static int getAndRemoveLastElement(Stack<Integer> stack){
+        // 先获取栈顶元素
+        int result = stack.pop();
+        // 判断是否为最后一个元素，是，返回该值
+        if (stack.isEmpty()){
+            return result
+        }
+        // 还有元素，使用递归继续往下找，同时将不是栈底元素压回栈中
+        else {
+            int last = getAndRemoveLastElement(stack);
+            stack.push(result);
+            return last;
+        }
+    }
+
+    // 递归函数二： 逆序一个栈
+    public static void reverse(Stack<Integer> stack){
+        if (stack.isEmpty()){
+            return;
+        }
+        // 首先依次逆序获取栈底值
+        int i = getAndRemoveLastElement(stack);
+        // 递归调用
+        reverse(stack);
+        // 逆序压入栈
+        stack.push(i);
+    }
+}
