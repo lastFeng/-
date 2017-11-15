@@ -1,0 +1,59 @@
+题目：
+  编写一个类，用两个栈实现队列，支持队列的基本操作（add、poll、peek）
+  
+思路：
+  栈的特点是先进后出，而队列的特点是先进先出。用两个栈正好能把顺序反过来实现类似队列的操作。
+ 
+具体实现：
+  一个栈作为压入栈，在压入数据时只往这个栈中压入，记为stackPush；
+  另一个栈只作为弹出栈，在弹出数据时只从这个栈弹出，记为stackPop；
+  
+  注意：
+    1. 如果stackPush要往stackPop中压入数据，那么必须一次性将stackPush中的所有数据压入
+    2. 如果stackPop不为空，stackPush就不能往stackPop中压入数据
+    
+ 
+ // java code
+ public class TwoStacksQueue{
+  public Stack<Integer> stackPush;
+  public Stack<Integer> stackPop;
+  
+  // 构造函数，初始化两个栈
+  public TwoStacksQueue(){
+    stackPush = new Stack<>();
+    stackPop = new Stack<>();
+  }
+  
+  // 向队列中添加一个值
+  public void add(int newNum){
+    stackPush.push(newNum);
+  }
+  
+  // 将队列中的值取出一个
+  public int poll(){
+    // 如果两个栈中均没有值，抛出异常
+    if(stackPush.isEmpty() && stackPop.isEmpty()){
+      throw new RuntimeException("Queue is empty!");
+    }
+    // 如果弹出栈为空，则将压入栈的所有值压入弹出栈中，再弹出
+    else if(stackPop.isEmpty()){
+      while(!stackPush.isEmpty()){
+        stackPop.push(stackPush.pop());
+      }
+    }
+    return stackPop.pop();
+  }
+  
+  // 获取队列中的一个值，但是不清除,大致过程与poll类似
+  public int peek(){
+    if(stackPush.isEmpty() && stackPop.isEmpty()){
+      throw new RuntimeException("Queue is empty!");
+    }
+    else if(stackPop.isEmpty()){
+      while(!stackPush.isEmpty()){
+        stackPop.push(stackPush.pop());
+      }
+    }
+    return stackPop.peek();
+  }
+ }
