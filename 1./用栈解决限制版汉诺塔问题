@@ -84,7 +84,19 @@
     ｝
     // (left-->mid-->right or right-->mid-->left) 五个步骤
     else{
-      
+      // 递归将1~num-1 从from 到 to
+      int part1 = process(num-1, left, mid, right, from, to);
+      // 将第num从from移到mid
+      System.out.println("Move " + num + " from " + from + " to " + mid);
+      int part2 = 1;
+      // 递归将1~num-1 从to 到 from
+      int part3 = process(num-1, left, mid, right, to, from);
+      // 将第num层从“中”移到to位置
+      System.out.println("Move " + num + " from " + mid + " to " + to);
+      int part4 = 1;
+      // 递归将1~num-1 从from 到 to
+      int part5 = process(num-1, left, mid, right, from, to);
+      return part1 + part2 + part3 + part4 + part5；
     }
   }
       
