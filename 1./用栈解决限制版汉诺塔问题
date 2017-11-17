@@ -99,6 +99,80 @@
       return part1 + part2 + part3 + part4 + part5；
     }
   }
+  
+  2. 非递归的方法---用栈来模拟整个过程
+  修改后的汉诺塔问题，实际动作只有四个：左-->中， 中-->左，中-->右，右-->中
+  把左、中、右三个地点抽象成栈，依次记为LS，MS，RS。
+    最初所有的塔都在LS上。那么如上4个动作就可以看成：某一个栈（from）把栈顶元素弹出，然后压入到另外一个栈（to），作为这个栈（to）的栈顶
+      1. 一个动作能发生的先决条件是不违反小压大的原则。
+      2. 相邻不可逆原则，否则不是最优解，即左-->中之后，不能执行中-->左操作，反复操作等于动作没有进行，但是浪费了步数，得不到最优解
+    由这两个原则，可以得出--非递归方法的核心结论：
+      1. 游戏的第一个动作一定是L-->M
+      2. 在走最少步数过程中的任何时刻，四个动作中只有一个动作不违反小压大和相邻不可逆
+        证明结论2：
+          假设前一步的动作是L-->M：
+            根据小压大原则，L-->M的动作不会重复发生
+            根据相邻不可逆原则，M-->L的动作也不该发生
+            根据小压大原则，M-->R和R-->M只会有一个达标
+          同理 M-->L，M-->R，R-->M可证。
+      所以在非递归过程中的动作，只要满足这两个原则下，只有一个动作可达，那么就能进行对应编程
+      
+  // code java 
+  
+  // 构造5个动作的枚举
+  public enmu Action{
+    No, LToM, MToL, MToR, RToM
+  }
+  // 非递归程序
+  public int hanoiProblem2(int num, String left, String mid, String right){
+    // 建立三个栈
+    Stack<Integer> lS = new Stack<>();
+    Stack<Integer> mS = new Stack<>();
+    Stack<Integer> rS = new Stack<>();
+    
+    // 将最大值压入栈，避免错误，但是这个值不使用
+    lS.push(Integer.MAX_VALUE);
+    mS.push(Integer.MAX_VALUE);
+    rS.push(Integer.MAX_VALUE);
+    
+    // 首先往lS栈压入num个值
+    for(int i = num; i > 0; i--){
+      lS.push(i);
+    }
+    
+    // 初始化动作，
+    Action[] record = {Action.No};
+    int step = 0;
+    
+    // 每次循环四个动作中只有一个动作才会满足
+    while(rS.size() != num + 1){
+      // L --> M
+      step += fStackToStack(record, Action.MToL, Action.LToM, lS, mS, left, mid);
+      // M --> L
+      step += fStackToStack(record, Action.LToM, Action.MToL, mS, lS, mid, left);
+      // M --> R
+      step += fStackToStack(record, Action.RToM, Action.MToR, mS, rS, mid, right);
+      // R --> M
+      step += fStackToStack(record, Action.MToR, Action.RToM, rS, mS, right, mid);
+    }
+    return step;
+  }
+  
+  public static int fStackToStack(Action[] record, Action preNoAct, Action nowAct, Stack<Integer> fStack, Stack<Integer> tStack,
+                    String from, String to){
+    // 满足两个原则
+    if(record[0] != preNoAct && fStcak.peek() < tStack.peek()){
+      tStack.push(fStack.pop());
+      System.out.println("Move " + tStack.peek() + " from " + from + " to " + to);
+      record[0] = nowAct;
+      return 1;
+    }
+    return 0;
+  }
+  
+      
+    
+  
       
       
       
