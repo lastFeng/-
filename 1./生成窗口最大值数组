@@ -25,4 +25,36 @@
     假设遍历到arr[i]，qmax的弹出规则为：
         如果qmax队头的下标等于i-w，说明当前qmax队头的下标已经过期，弹出当前队头的下标即可。
         
+  // code java
+  public int [] getMaxWindow(int[] arr, int w){
+    // 不符合条件，返回null 
+    if(arr == null  || w < 1 || arr.length < w){
+        return null;
+    }
     
+    // 构造qmax双端队列
+    LinkedList<Integer> qmax = new LinkedList<>();
+    // 结果数组
+    int [] res = new int[arr.length - w + 1];
+    
+    // 结果数组的下标
+    int index = 0;
+    
+    // 进行操作
+    for(int i=0; i<arr.length; i++){
+        // qmax不为空，同时 arr[j] <= arr[i] 的时候循环操作
+        while(!qmax.isEmpty() && arr[qmax.peekLast()] <= arr[i]){
+            qmax.pollLast();
+        }
+        qmax.add(i);
+        
+        // 如果qmax队头的下标等于i-w，说明当前qmax队头的下标已经过期，弹出当前队头的下标即可
+        if(qmax.peekFirst() == i - w){
+            qmax.pollFirst();
+        }
+        // 每次到达了一个窗口的大小，则将窗口中的最大值添加入数组中（窗口最大值即为队头）
+        if(i >= w - 1){
+            res[index++] = arr[qmax.peekFirst()];
+        }
+    }
+  }
