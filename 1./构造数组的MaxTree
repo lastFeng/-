@@ -40,16 +40,18 @@ public Node getMaxTree(int[] arr){
   for(int i=0; i!=nArr.length; i++){
     Node curNode = nArr[i];
     
+    // 从左到右，依次将该点左边第一次出现的比其大的值使用map映射，如果没有则为null
     while((!stack.isEmpty()) && stack.peek().value < curNode.value){
       popStackSetMap(stack, lBigMap);
     }
     stack.push(curNode);
   }
-  
+  // 会遗留一些，将剩下的直接处理
   while(!stack.isEmpty()){
     popStackSetMap(stack, lBigMap);
   }
   
+  // 从右到左，依次将该点右边第一次出现的比其大的值使用map映射，如果没有则为null
   for(int i=nArr.length-1; i != -1; i--){
     Node curNode = nArr[i];
     
@@ -59,10 +61,12 @@ public Node getMaxTree(int[] arr){
     stack.push(curNode);
   }
   
+  // 剩余栈中值直接操作
   while(!stack.isEmpty()){
     popStackSetMap(stack, rBigMap);
   }
   
+  // 开始处理
   Node head = null;
   
   for(int i=0; i != nArr.length; i++){
@@ -70,10 +74,13 @@ public Node getMaxTree(int[] arr){
     Node left = lBigMap.get(curNode);
     Node right = rBigMap.get(curNode);
     
+    // 如果左右都没有比此节点大的值，那么此节点为最大值，记为根节点
     if(left==null && right==null){
       head = curNode;
     }
+    // 如果左边没有比其大的值，那么右边比其大的值为当前节点的父节点
     else if(left == null){
+    // 将当前节点插入到相应的位置
       if(right.left == null){
         right.left = curNode;
       }
@@ -81,7 +88,9 @@ public Node getMaxTree(int[] arr){
         right.right = curNode;
       }
     }
+    // 右边没有比其大的值，那么左边比其大的值为当前节点的父节点
     else if(right == null){
+    // 将当前节点插入到对应父节点的位置
       if(left.left == null){
         left.left = curNode;
       }
@@ -90,9 +99,10 @@ public Node getMaxTree(int[] arr){
       }
     }
     else{
-      // 左边和右边第一个大中的较小一个
+      // 左边和右边第一个大中的较小一个为父节点
       Node parent = left.value < right.value ? left : right;
       
+      // 将当前节点插入到父节点的对应位置
       if(parent.left == null){
         parent.left = curNode;
       }
@@ -104,6 +114,7 @@ public Node getMaxTree(int[] arr){
   return head;
 }
 
+// 设置当前点左右两边比当前点大的映射，如果没，则为null
 public void popStackSetMap(Stack<Node> stack, HashMap<Node, Node> map){
   Node popNode = stack.pop();
   
