@@ -1,0 +1,102 @@
+题目：
+  分别实现两个函数，一个可以删除单链表中倒数第k个节点，另一个可以删除双链表中倒数第k个节点。
+
+要求：
+  如果链表长度为N，时间复杂度达到O(N)，额外空间复杂度达到O(1)
+  
+单链表思路：
+  1. 如果单链表为空或者k值小于1，这种情况下，参数是无效的，直接返回即可。
+  2. 让链表从头开始走到尾，每移动一步，就让k的值减1.
+    当链表走到结尾时，如果k值大于0，说明k值大于链表长度，不需要调整
+    当链表走到结尾时，如果k值等于0，说明倒数第k个值为头结点，将head指向head.next即可
+    当链表走到结尾时，如果k值小于0，找到删除节点的前一个节点
+      此时，重新从头结点开始走，每移动一步，就让k的值加1。当k=0时，移动停止，移动到的节点就是要删除节点的前一个节点。
+
+// code java
+// 单链表节点类
+public class Node{
+  public int value;
+  public Node next;
+  public Node(int data){
+    this.value = data;
+  }
+}
+
+public class SingleLink{
+  public Node removeLastKthNode(Node head, int lastKth){
+    // 参数无效
+    if(head == null || lastKth < 1){
+      return head;
+    }
+    Node cur = head;
+    while(cur != null){
+      lastKth--;
+      cur = cur.next;
+    }
+    // 要删除的节点为头结点
+    if(lastKth == 0){
+      head = head.next;
+    }
+    if(lastKth < 0){
+      cur = head;
+      // 找到要删除的前一个节点
+      while(++lastKth != 0){
+        cur = cur.next;
+      }
+      // 根据next指向，跳过要删除的节点
+      cur.next = cur.next.next;
+    }
+    return head;
+  }
+}
+
+双链表思路：
+  双链表的调整与单链表几乎一致，注意双链表删除节点的动作
+  
+// code java
+// 双链表节点类
+public class DoubleNode{
+  public int value;
+  public DoubleNode last;
+  public DoubleNode next;
+  public DoubleNode(int data){
+    this.value = data;
+  }
+}
+
+// 双链表删除类
+public class DoulbeLink{
+  public DoubleNode removeLastKthNode(DoubleNode head, int lastKth){
+    if(head == null || lastKth < 1){
+      return head;
+    }
+    
+    DoubleNode cur = head;
+    
+    while(cur != null){
+      lastKth--;
+      cur = cur.next;
+    }
+    // 删除的节点为头结点
+    if(lastKth == 0){
+      head = head.next;
+      head.last = null;
+    }
+    // 删除的节点为内部节点
+    if(lastKth < 0){
+      cur = head;
+      // 找到删除节点的前一个节点
+      while(++lastKth != 0){
+        cur = cur.next;
+      }
+      
+      DoubleNode newNext = cur.next.next;
+      cur.next = newNext;
+      // 考虑删除的是不是尾节点
+      if(newNext != null){
+        newNext.last = cur;
+      }
+    }
+    return head;
+  }
+}
