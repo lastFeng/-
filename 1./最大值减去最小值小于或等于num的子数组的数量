@@ -64,6 +64,15 @@ public int getNum(int[] arr, int num){
       // 满足条件下，j向右扩位置
       j++;
     }
+    // 将过期的qmin弹出
+    if(qmin.peekFirst() == i){
+      qmin.pollFirst();
+    }
+    // 将过期的qmax弹出
+    if(qmax.peekFirst() == i){
+      qmax.pollFirst();
+    }
+    
     // 更新结果
     res += j - i;
     // i位置向右扩位置
