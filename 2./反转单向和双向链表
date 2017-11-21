@@ -1,0 +1,59 @@
+题目：
+  分别实现反转单向和双向链表的函数
+  
+要求：
+  时间复杂度O(N)，空间复杂度O(1)
+  
+思路：
+  单向反转，利用两个临时节点来暂时保存前后节点，之后进行反转
+  双向反转类似
+  
+//code java
+// Node class
+public class Node{
+  public int value;
+  public Node next;
+  
+  public Node(int data){
+    this.value = data;
+  }
+}
+
+// SingleNode
+public Node reverseList(Node head){
+  Node pre = null;
+  Node next = null;
+  while(head != null){
+  // 注意赋值顺序
+    next = head.next;
+    head.next = pre;
+    pre = head;
+    head = next;
+  }
+  return pre;
+}
+
+// DoubleNode class
+public class DoubleNode{
+  public int value;
+  public DoubleNode last;
+  public DoubleNode next;
+  public DoubleNode(int data){
+    this.value = data;
+  }
+}
+// code DouleNode
+public DoubleNode reverseList(DoubleNode head){
+  DoubleNode pre = null;
+  DoulbeNode next = null;
+  
+  while(head != null){
+  // 注意赋值顺序
+    next = head.next;
+    head.next = pre;
+    head.last = next;
+    pre = head;
+    head = next;
+  }
+  return pre;
+}
