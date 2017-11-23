@@ -1,0 +1,112 @@
+题目：
+  据说著名犹太历史学家Josephus有过以下的故事：在罗马人占领乔塔帕特后，39个犹太人与Josephus及他的朋友躲到一个洞中，39个犹太人决定宁死也不要被敌人抓到，于是决定了一个自杀方式
+  41个人排成一个圆圈，由第一个人开始报数，报数到3的人就自杀，然后再由下一个重新报1，报数到3的人再自杀，这样依次下去，知道剩下最后一个人时，那个人可以选择自己的命运。
+  现在请用单向环形链表描述该结构并呈现整个自杀过程。
+  
+  输入：一个环形单向链表的头结点head和报数的值m。
+  返回：最后生存下来的节点，且这个节点自己组成环形单向链表，其他节点都删掉。
+  
+思路：
+  1. 如果链表为空或链表节点数为1，或者m的值小于1，直接返回
+  2. 在环形链表中遍历每个节点，不断转圈，不断让每个节点报数。
+  3. 当报数到达m是，就删除当前报数的节点。
+  4. 删除节点后，别忘记了还要把剩下的节点继续连城环状，继续转圈，继续删除。
+  5. 直到环形链表中只剩下一个节点，过程结束。
+  
+// code java
+public class Node{
+  public int value;
+  public Node next;
+  
+  public Node(int data){
+    this.value = data;
+  }
+}
+
+public Node josephusKill(Node head, int m){
+  if(head == null || head.next == head || m < 1){
+    return head;
+  }
+  // 删除一个节点，要知道其前节点
+  // 尾节点
+  Node last = head;
+  // 找到尾节点
+  while(last.next != head){
+    last = last.next;
+  }
+  
+  int count = 0;
+  // 循环删除
+  while(head != last){
+    if(++count == m){
+      // 此时只要将last下一个（前节点）指向被删除节点的下一个
+      // 前节点不动
+      last.next = head.next;
+      count = 0;
+    }
+    else{
+      last = last.next;
+    }
+    head = head.next;
+  }
+  return head;
+}
+
+进阶：
+  在时间复杂度O(N)下完成要求
+  
+思路：
+  我们需要根据节点数n和报数值m直接计算出保留的节点
+  
+  将节点从1..n进行编号：
+    最后只剩下一个节点，这个幸存节点在只由自己组成的环中编号为1，记为Num（1）= 1
+    在由两个节点组成的环中，这个幸存节点的编号是多少？假设编号为Num（2）；
+    ...
+    在由i-1个节点组成的环中，这个幸存节点的编号是多少？假设编号为Num（i-1）； 
+    在由i个节点组成的环中，这个幸存节点的编号是多少？假设编号为Num（i）；
+    ...
+    在由n个节点组成的环中，这个幸存节点的编号是多少？假设编号为Num（n）；
+    
+    我们已经知道Num（1）=1，如果再确定Num（i-1）和Num（i）到底是什么关系，就可以通过递归过程求出Num（n）。
+      
+    Num（i） = (Num（i-1） + m - 1) % i + 1
+    
+// code java 
+public Node josephusKill2(Node head, int m){
+  // 不符合条件下，不做改变
+  if(head == null || head.next==null || m < 1){
+    return head;
+  }
+  
+  // 临时节点，用于计算节点个数
+  Node cur = head.next;
+  
+  // 计算节点个数
+  int tmp = 1;
+  while(cur != head){
+    tmp++;
+    cur = cur.next;
+  }
+  
+  // 幸存节点位置
+  tmp = getLive(tmp, m);
+  
+  // 找到幸存节点
+  while(--tmp != 0){
+    head =head.next;
+  }
+  // 幸存节点指向自身
+  head.next = head;
+  return head;
+}
+
+public static int getLive(int i, int m){
+  if(i==1){
+    return 1;
+  }
+  return (getLive(i-1, m) + m - 1) % i + 1;
+}
+
+    
+    
+    
