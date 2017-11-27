@@ -1,0 +1,146 @@
+题目：
+  给定一个单向链表的头节点head，节点的值类型是整型，再给定一个整数pivot。实现一个调整链表的函数：
+  将链表调整为左部分都是值小于pivot的节点，中间部分都是值相于pivot的节点，右半部分都是值大于pivot。对调整后的顺序没有更多要求。
+  
+思路：
+  普通解法的时间复杂度为O(N)，额外空间复杂度为O(N)，就是把链表中的所有节点放入一个额外的数组中，然后统一调整位置的方法。
+    1. 先遍历一遍链表，为了得到链表的长度，假设长度为N。
+    2. 生成长度为N的Node类型的数组nodeArr，然后遍历一遍链表，将节点放入数组中。
+    3. 在nodeArr中，把小于pivot的节点放在左边，把相等的放中间，把大于的放右边。
+    4. 调整之后，将nodeArr的节点依次连接起来。
+    
+    public class Node{
+      public int value;
+      public Node next;
+      
+      public Node(int data){
+        this.value = data;
+      }
+    }
+    
+    public Node listPartition1(Node head, int pivot){
+      if(head == null){
+        return head;
+      }
+      
+      Node cur = head;
+      
+      int i = 0;
+      // 计算链表的长度
+      while(cur != null){
+        i++;
+        cur = cur.next;
+      }
+      
+      Node[] nodeArr = new Node[i];
+      
+      // 填充nodeArr数组
+      cur = head;
+      for(i=0; i<nodeArr.length; i++){
+        nodeArr[i] = cur;
+        cur = cur.next;
+      }
+      
+      // 调整nodeArr数组，使其满足条件
+      arrPartition(nodeArr, pivot);
+      
+      //　讲数组还原成链表
+      for(i=1; i<nodeArr.length; i++){
+        nodeArr[i-1].next = nodeArr[i];
+      }
+      nodeArr[i-1].next = null;
+      return nodeArr[0];
+    }
+    
+    public static void arrPartiton(Node[] nodeArr, int pivot){
+      int small = -1;
+      int big = nodeArr.length;
+      
+      int index = 0;
+      while(index != big){
+        if(nodeArr[index].value < pivot){
+          swap(nodeArr, ++small, index++);
+        }
+        else if(nodeArr[index].value == pivot){
+          index++;
+        }
+        else{
+          swap(nodeArr, --big, index);
+        }
+      }
+    }
+    
+    public static void swap(NOde[] nodeArr, int a, int b){
+      Node tmp = nodeArr[a];
+      nodeArr[a] = nodeArr[b];
+      nodeArr[b] = tmp;
+    }
+    
+  进阶：
+    左、中、右三个部分的顺序要和原链表的顺序一致
+    如果链表长度为N，事件复杂度为O(N),空间复杂度为O(1)
+    
+  思路：
+    1. 将原链表中的所有节点依次划分为三个链表，三个链表分别为small，equal，big
+    2. 将small，equal，big三个链表重新串起来
+    3. 特别注意对null节点的判断和处理
+    
+  // code java
+  public static Node listPartiton2(Node head, int pivot){
+    Node sH = null; // small head
+    Node sT = null; // small Tail
+    Node eH = null;
+    Node eT = null;
+    Node bH = null;
+    Node bT = null;
+    
+    Node next = null;  // 保存下一个节点
+    // 所有的节点风景三个链表中
+    while(head != null){
+      next = head.next;
+      head.next = null;
+      
+      if(head.value < pivot){
+        if(sH == null){
+          sH = head;
+          sT = head;
+        }else{
+          sT.next = head;
+          sT = head;
+        }
+      }
+      else if(head.value == pivot){
+        if(eH == null){
+          eH = head;
+          eT = head;
+        }else{
+          eT.next = head;
+          eT = head;
+        }
+      }
+      else{
+        if(bH == null){
+          bH = head;
+          bT = head;
+        }else{
+          bT.next = head;
+          bT = head;
+        }
+      }
+      head = next;
+    }
+    
+    // small和equal连接
+    // small不为空时，操作
+    if(sT != null){
+      sT.next = eH;
+      eT = eT == null ? sT : eT;
+    }
+    //　所有连接
+    if(eT != null){
+      eT.next = bH;
+    }
+    
+    // 为空时的返回
+    return sH !=null ? sH : eH != null ? eH : bH; 
+  }
