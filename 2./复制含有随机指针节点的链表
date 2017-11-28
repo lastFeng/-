@@ -1,0 +1,107 @@
+题目：
+  一种特殊的链表节点类描述如下：
+    public class Node{
+      public int value;
+      public Node next;
+      public Node rand;
+      
+      public Node(int data){
+        this.value = data;
+      }
+    }
+    
+  Node类中的value是节点值，next指针和正常单链表中next指针的意义一样，都指向下一个节点，
+rand指针是Node类中新增的指针，这个指针可能指向链表中的任意一个节点，也可能指向null。
+  给定一个由Node节点类型组成的无环单链表的头节点head，请实现一个函数完成这个链表中所有结构的复制，并返回赋值的新链表的头结点。
+  例如：链表1->2->3->null，假设1的rand指针指向3，2的rand指针指向null，3的指针指向1.复制后的链表应该也是这种结构。
+  
+思路：
+  普通解法，可以做到时间复杂度为O(N)，额外空间复杂度为O(N)，需要用到哈希表（HashMap）结构。
+  1. 首先重做到右遍历链表，对每个节点都复制生成相应的副本节点，然后将对应关系放入哈希表map中。
+  （步骤1完成后，原链表没有任何变化，每一个副本节点的next和rand指针都指向null）
+  
+  2. 再从左到右遍历链表，此时就可以设置每一个副本节点的next和rand指针。
+  
+  3. 将头结点返回即可。
+  
+  哈希表增删改查的操作时间复杂度都是O(1)，普通方法一共只遍历链表两遍，所以普通解法的时间复杂度为O(N)，额外空间复杂度为O(N)。
+  
+  // code java
+  public Node copyListWithRand1(Node head){
+    HashMap<Node, Node> map = new HashMap<>();
+    Node cur = head;
+    
+    // 将节点放入map中
+    while(cur != null){
+      map.put(cur, new Node(cur.value));
+      cur = cur.next;
+    }
+    
+    cur = head;
+    // 复制节点
+    while(cur != null){
+      map.get(cur).next = nap.get(cur.next);
+      map.get(cur).rand = map.get(cur.rand);
+      cur = cur.next;
+    }
+    
+    // 返回赋值的节点
+    return map.get(head);
+  }
+  
+进阶：
+  不使用额外的数据结构，只用有限个变量，且在时间复杂度为O(N)内完成
+  
+
+思路：
+  1. 首先从左到右遍历链表，对每个节点cur都复制生成相应的副本节点copy，然后把copy放在cur和下一个要遍历节点的中间。
+  
+  2. 再从左到右遍历链表，在遍历时设置每一个副本节点的rand指针。
+  
+  3. 此时所有节点与副本节点串在一起，将其分离出来即可。
+  
+// code java
+public Node copyListWithRand2(Node head){
+  if(head == null){
+    return null;
+  }
+  
+  Node cur = Node;
+  Node next = null;
+  
+  // 复制并链接每一个节点
+  while(cur != null){
+    next = cur.next;
+    cur.next = new Node(cur.value);
+    cur.next.next = next;
+    cur = next;
+  }
+  
+  cur = head;
+  Node curCopy = null;
+  // 设置复制节点的rand指针
+  while(cur　!= null){
+    next = cur.next.next;
+    curCopy = cur.next;
+    // 因为复制的要指向复制的rand，而复制的rand在cur.rand的下一个节点
+    curCopy.rand = cur.rand != null ? cur.rand.next : null;
+    cur = next;
+  }
+  
+  Node res = head.next;
+  cur = head;
+  
+  // 拆分
+  while(cur != null){
+    next = cur.next.next;
+    curCopy = cur.next;
+    
+    cur.next = next;
+    curCopy.next = next != null : next.next ? null;
+    cur = next;
+  }
+  
+  return res;
+}
+
+  
