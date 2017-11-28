@@ -1,0 +1,76 @@
+题目：
+  假设链表中每一个节点的值都是0~9之间，那么链表整体就可以代表一个整数。
+  例如：9->3->7，可以代表整数937.
+  
+  给定两个这种链表的头节点head1和head2，请生成代表两个整数相加值的结果链表。
+  例如：链表1为9->3->7,链表2为6->3。最后生成的新的结果链表为1->0->0->0。
+  
+思路：
+  将两个链表先算出各自所代表的整数，然后求出两个整数的和，最后将这个和转换成链表形式。但是由于使用int会出现溢出情况，所以不太适用。
+  
+  方法一：利用栈结构求解。
+  1. 将两个链表分别从左到右遍历，遍历过程中将值压栈，这样就生成了两个链表节点值的逆序栈，分别表示s1和s2.
+  2. 将s1和s2同步弹出，这样就相当于两个链表从低位到高位依次弹出，这个过程中生成相加链表即可，同时需要关注每一步是否有进位，用ca表示。
+  3. 当s1和s2都空时，还要关注一下进位是否为1。如果为1，则要生成新节点
+  4. 返回新生成的结果链表即可。
+  
+  // code java
+  public class Node{
+    public int value;
+    public Node next;
+    
+    public Node(int data){
+      this.value = data;
+    }
+  }
+  
+  public Node addLists1(Node head1, Node head2){
+    Stack<Integer> s1 = new Stack<>();
+    Stack<Integer> s2 = new Stack<>();
+    
+    // 弹出head1的值，压入栈 
+    while(head1 != null){
+      s1.push(head1.value);
+      head1 = head1.next;
+    }
+    
+    // 弹出head2的值，压入栈
+    while(head2 != null){
+      s2.push(head2.value);
+      head2 = head2.next;
+    }
+    
+    // 进位
+    int ca = 0;
+    // 保存s1栈中弹出的值，要判断是否为空，为空赋值为0
+    int n1 = 0;
+    // 保存s2栈中弹出的值，要判断是否为空，为空赋值为0
+    int n2 = 0;
+    // 保存两个链表对应值相加的结果，判断是否大于10，并设置进位
+    int n = 0;
+    
+    // 两个链表相加后生成的新链表头节点
+    Node node = null;
+    Node pre = null;
+    
+    // 注意新节点这个是逆序的，要从前往后指
+    while(!s1.isEmpty() || !s2.isEmpty()){
+      n1 = s1.isEmpty() ? 0 : s1.pop();
+      n2 = s2.isEmpty() ? 0 : s2.pop();
+      n = n1 + n2;
+      pre = node;
+      node = new Node(n % 10);
+      node.next = pre;
+      ca = n / 10;
+    }
+    
+    // 最后判断进位是否为1，若为1，则需要新建一个节点，同时为头节点
+    if(ca == 1){
+      pre = node;
+      node = new Node(1);
+      node.next = pre;
+    }
+    
+    return node;
+  }
+    
