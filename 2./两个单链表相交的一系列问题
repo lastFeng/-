@@ -10,3 +10,194 @@
    问题2：如何判断两个无环链表是否相交，相交则返回第一个相交节点，不想交则返回null。
    问题3：如何判断两个有环链表是否相交，相交则返回第一个相交节点，不想交则返回null。
    注意：如果一个链表有环，另一个链表无环，它们是不可能相交的，直接返回null。
+   
+分析：
+  问题一：如何判断一个链表是否有环，如果有，则返回第一个进入环的节点，没有则返回null；
+  如果一个链表没有环，那么遍历链表一定可以遇到链表的终点；如果有环，那么链表遍历就会永远在环里循环。
+  1. 设置一个慢指针slow和一个快指针fast。在开始时，slow和fast都指向链表的头节点head。然后slow移动一步，fast移动两步
+  2. 如果链表无环，那么fast指针在移动过程中一定先遇到终点。一但fast到达终点，说明链表是没有环的，直接返回null，表示该链表无环。
+  3 如果链表有环，那么fast指针和slow指针一定会在环中的某个位置相遇，当fast和slow相遇时，fast指针重新回到head位置，slow指针不动，
+  接下来，fast指针从每次移动两步改为移动一步，slow指针依然每次移动一步，然后继续遍历。
+  4. fast指针和slow指针一定会再次相遇，并且在第一个入环的节点处相遇。
+  
+  // code java
+  public Node getLoopNode(Node head){
+    // 不满足条件下，返回true，构不成环
+    if(head == null || head.next == null || head.next.next == null){
+      return null;
+    }
+    Node n1 = head.next;  // slow
+    Node n2 = head.next.next;  // fast
+    
+    // 找到slow与fast相等的时候
+    while(n1 != n2){
+      // fast到达终点，没有环
+      if(n2.next == null || n2.next.next == null){
+        return null;
+      }
+      n2 = n2.next.next;
+      n1 = n1.next;
+    }
+    
+    // 有环的时候，fast指针回到head
+    n2 = head; // fast walk again from head
+    
+    // fast和slow都每次移动一步，最终会走到第一个入环节点
+    while(n1 != n2){
+      n1 = n1.next;
+      n2 = n2.next;
+    }
+    // 返回n1或n2都行
+    return n1;
+  }
+  
+  问题二：如何判断两个无环链表是否相交，相交则返回第一个相交点，不想交则返回null；
+  如果两个无环链表相交，那么从相交点开始，一直到两个链表终止的这一段，是两个链表共享的。
+  1. 链表1从头节点开始，走到最后一个节点，长度记为len1，最后一个节点记为end1.
+  2. 链表2从头节点开始，走到最后一个节点，长度记为len2，最后一个节点记为end2.
+  3. 如果end1 != end2，说明两个链表不相交，返回null；如果end1==end2，说明两个链表相交，进入步骤4来找寻第一个相交节点。
+  4. 如果链表1比较长，链表1就先走len1-len2步；如果链表2比较长，链表2就先走len2-len1步。然后两个链表一起走，直到两个链表走到一起的那个节点即是解。
+  
+// code java
+public Node noLoop(Node head1, Node head2){
+  // 不满足条件下，返回null
+  if(head1 == null || head2 == null){
+    return null;
+  }
+  
+  // 两个临时指针指向对应头节点，找到链表长度和最后一个节点
+  Node cur1 = head1;
+  Node cur2 = head2;
+  
+  int n = 0;
+  // 找到链表1的长度和尾节点
+  while(cur1.next != null){
+    n++;
+    cur1 = cur.next;
+  }
+  // 找到链表2与链表1长度的差，以及尾节点
+  while(cur2.next != null){
+    n--;
+    cur2 = cur2.next;
+  }
+  
+  // 两个链表尾节点不同，则这两个节点不想交
+  if(cur1 != cur2){
+    return null;
+  }
+  
+  // 哪个链表比较长，就要显然较长的链表先走几步
+  cur1 = n > 0 ? head1 : head2;
+  cur2 = cur1 == head1 ? head2 : head1;
+  n = Math.abs(n);
+  while(n != 0){
+    n--;
+    cur1 = cur.next;
+  }
+  
+  // 两链表同时走，到了相等的节点，就是第一个相交节点
+  while(cur1 != cur2){
+    cur1 = cur1.next;
+    cur2 = cur2.next;
+  }
+  return cur1;
+}
+
+问题三： 如何判断两个有环链表是否相交，相交则返回第一个相交节点，不想交则返回null；
+考虑问题三时，我们已经得到了两个链表各自的第一个入环节点，假设链表1的入环节点为loop1， 链表2的入环节点为loop2.
+1. 如果loop1==loop2，按照问题2end1==end2取得第一个相交节点
+2. 如果loop1!=loop2，要么两个链表不想交，要么loop1和loop2只是相交环中的两个节点。
+3. 如何判断2的两种情况：
+    此时，让链表1从loop1出发，因为loop1和之后的所有节点都在环上，所以将来一定能回到loop1.
+    如果回到loop1之前没有碰到loop2，那么这两个节点就不想交，直接返回null。
+    如果碰到了loop2，那么这两个链表相交，返回loop1或loop2即可。
+    
+// code java
+public Node bothLoop(Node head1, Node loop1, Node head2, Node loop2){
+  Node cur1 = null;
+  Node cur2 = null;
+  
+  // loop1 == loop2，此时就像两个链表的尾节点相等，通过尾节点找到第一个相交节点
+  if(loop1 == loop2){
+    cur1 = head1;
+    cur2 = head2;
+    int n = 0;
+    
+    while(cur1 != loop1){
+      n++;
+      cur1 = cur1.next;
+    }
+    
+    while(cur2 != loop2){
+      n--;
+      cur2 = cur2.next;
+    }
+    
+    cur1 = n > 0 ? head1 : head2;
+    cur2 = cur1 == head1 ? head2 : head1;
+    
+    n = Math.abs(n);
+    while(n!=0){
+      n--;
+      cur1 = cur1.next;
+    }
+    
+    while(cur1 != cur2){
+      cur1 = cur1.next;
+      cur2 = cur2.next;
+    }
+    return cur1;
+  }
+  // loop1 != loop2时，会有两种情况：
+  // 1. 两链表不想交
+  // 2. 两链表相交，此时loop1和loop2只是相交环上的两个节点
+  // 那么，只要遍历循环loop1，绕一次环，没有遇到loop2,说明loop2不在环里，不想交
+  // 遇到loop2说明两链表相交，返回loop1或loop2即可
+  else{
+    cur1 = loop1.next;
+    while(cur1 != loop1){
+      if(cur1 == loop2){
+        return loop1;
+      }
+      cur1 = cur1.next;
+    }
+    return null;
+  }
+}
+
+完整代码：
+// code java complete
+public class Node{
+  public int value;
+  public Node next;
+  
+  public Node(int data){
+    this.value = data;
+  }
+}
+
+// 输入两个链表头结点节点
+public Node getIntersectNode(Node  head1, Node head2){
+  if(head1 == null || head2 == null){
+    return null;
+  }
+  
+  // 获取链表是否有环
+  Node loop1 = getLoopNode(head1);
+  Node loop2 = getLoopNode(head2);
+  
+  // 其中一个没环，呢么就使用没环函数
+  if(loop1 == null || loop2 == null){
+    return noLoop(head1, head2);
+  }
+  
+  // 都有环，使用bothLoop函数
+  if(loop1 != null && loop2 != null){
+    return bothLoop(head1, loop1, head2, loop2);
+  }
+  
+  // 否则返回null
+  return null;
+}
+  
+  
