@@ -1,0 +1,121 @@
+题目：
+  给定一个单链表的头节点head，实现一个调整单链表的函数，使得每k个节点之间逆序，如果最后不够k个节点一组，则不调整最后几个节点。
+  
+思路：
+  方法一：使用栈结构的解法----时间复杂度为O(N)，空间复杂度为O(N)
+  1. 从左到右遍历链表，如果栈的大小不等于k，就将节点不断压入栈中。
+  2. 当栈的大小第一次达到K时，说明第一次凑齐了k个节点进行逆序，从栈中依次弹出这些节点，
+  并根据弹出的顺序重新连接，这一组逆序完成后，需要记录一下新的头部，同时第一组的最后一个节点（原来的头节点）应该连接下一个节点。
+  3. 当栈的大小每次到达k时，说明又凑齐了一组应该进行逆序的节点，从栈中依次弹出这些节点，
+  并根据弹出的顺序重新连接。这一组逆序完成后，改组的第一个节点（原来是该组最后一个节点）应该被上一组的最后一个节点连接上，这一组的最后
+  一个节点（原来是该组最后一个节点）应该连接下一个节点。
+  4. 最后应该返回newHead，最为链表的头节点。
+  
+  // code java
+  public class Node{
+    public int value;
+    public Node next;
+    
+    public Node(int data){
+      this.value = data;
+    }
+  }
+  
+  public Node reverseKNodes1(Node head, int K){
+    // 如果K小于2，则说明没必要逆序
+    if(K < 2){
+      return head;
+    }
+    Stack<Node> stack = new Stack<>();
+    Node newHead = head;
+    Node cur = head;
+    Node pre = null;
+    Node next = null;
+    
+    while(cur != null){
+      next = cur.next;
+      stack.push(cur);
+      // 判断栈是否达到K
+      // 没有达到K或者不足K的话，就不进行逆序
+      if(stack.size() == K){
+        // 逆序的函数
+        pre = resign1(stack, pre, next);
+        // 逆序后的头结点
+        // 为head的话，就替换，否则不改变
+        newHead = newHead == head ? cur : newHead;
+      }
+      cur = next;
+    }
+    return newHead;
+  }
+  
+  // K节点逆序
+  public Node resign1(Stack<Node> stack, Node left, Node right){
+    Node cur = stack.pop();
+    if(left != null){
+      left.next = cur;
+    }
+    Node next = null;
+    while(!stack.isEmpty()){
+      next = stack.pop();
+      cur.next = next;
+      cur = next;
+    }
+    cur.next = right;
+    return cur;
+  }
+  
+  方法二： 在原链表中进行调整----时间复杂度为O(N)，空间复杂度为O(1)
+  用变量记录每一组开始的第一个节点和最后一个节点，然后直接逆序调整，把这一组的节点都逆序。
+  需要注意第一组节点的特殊处理，以及之后的特殊处理。
+  
+  // code java
+  public Node reverseKNodes2(Node head, int K){
+    if(K < 2){
+      return head;
+    }
+    
+    Node cur = head;
+    Node start = null;
+    Node pre = null;
+    Node next = null;
+    int count = 1;
+    
+    while(cur != null){
+      next = cur.next;
+      if(count == K){
+        start = pre == null ? head : pre.next;
+        head = pre == null ? cur : head;
+        resign2(pre, start, cur, next);
+        
+        pre = start;
+        count = 0;
+      }
+      count++;
+      cur = next;
+    }
+    return head;
+  }
+  
+  public Node resign2(Node left, Node start, Node end, Node right){
+    Node pre = start;
+    Node cur = start.next;
+    
+    Node next = null;
+    while(cur != right){
+      next = cur.next;
+      cur.next = pre;
+      pre = cur;
+      cur = next;
+    }
+    
+    if(left != null){
+      left.next = end;
+    }
+    
+    start.next = right;
+  }
+  
+  
+  
+    
