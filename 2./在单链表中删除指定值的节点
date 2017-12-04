@@ -1,0 +1,57 @@
+题目：
+  给定一个单链表的头节点head和一个整数num，请实现函数将值为num的节点全部删除
+
+思路：
+  方法一：利用栈或其他容器节点 时间复杂度O(N)，空间复杂度O(N)
+    将值不等于num的节点用栈收集起来，收集完成之后重新连接即可。最后将栈底的节点作为新节点返回即可。
+    
+    public class Node{
+      public int value;
+      public Node next;
+      
+      public Node(int data){
+        this.value = data;
+      }
+    }
+    
+    public Node removeValue1(Node head, int num){
+      Stack<Node> stack = new Stack<>();
+      while(head != null){
+        // 节点值不等于指定值
+        if(head.value != num){
+          stack.push(head);
+        }
+        head = head.next;
+      }
+      
+      while(!stack.isEmpty()){
+        Stack.peek().next = head;
+        head = stack.pop();
+      }
+      return head;
+    }
+  
+  方法二：直接调整 时间复杂度O(N)，空间复杂度O(1)
+    
+    public Node removeValue2(Node head, int num){
+      // 头节点如果都是指定值
+      while(head != null){
+        if(head.value != num){
+          break;
+        }
+        head = head.next;
+      }
+      Node pre = head;
+      Node cur = head.next;
+      while(cur != null){
+        if(cur.value == num){
+          pre.next = cur.next;
+        }
+        else{
+          pre = cur;
+        }
+        cur = cur.next;
+      }
+      return head;
+    }
+  
