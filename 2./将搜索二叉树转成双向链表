@@ -1,0 +1,52 @@
+题目：
+  对二叉树的节点来说，有本身的值域，有指向左孩子和右孩子的两个指针；
+  对双向链表的节点来说，有本身的值域，有指向上一个节点和下一个节点的指针。
+  在结构上，两种结构有相似性，现在有一颗搜索二叉树，请将其转换为一个有序的双向链表。
+  
+  public class Node{
+    public int value;
+    publie Node left;
+    public Node right;
+    
+    public Node(int data){
+      this.value = data;
+    }
+  }
+  
+  对每一个节点来说，原来的right指针等价于转换后的next指针，原来的left指针等价于转换后的last节点，最后返回转换后的双向链表头节点。
+  
+思路：
+  方法一： 用队列等容器收集二叉树中序遍历结果的方法，时间复杂度O(N)，空间复杂度O(N)
+    1. 生成一个队列，记为queue，按照二叉树中序遍历的顺序，将每个节点放入queue中。
+    2. 从queue中依次弹出节点，并按照弹出的顺序重新连接所有的节点即可。
+    
+    public Node convert1(Node head){
+      Queue<Node> queue = new LinkedList<>();
+      
+      // 将二叉树中序遍历结果按顺序放入queue
+      inOrderToQueue(head, queue);
+      
+      if(queue.isEmpty()){
+        return head;
+      }
+      
+      // 头结点为队列第一个出来的节点
+      head = queue.poll();
+      Node pre = head;
+      pre.left = null;
+      pre.right = null;
+      Node cur = null;
+      // 从第二个节点开始
+      while(!queue.isEmpty()){
+        // 设置双向节点
+        cur = queue.poll();
+        pre.rigth = cur;
+        cur.left = pre;
+        pre = cur;
+      }
+      
+      // 设置最后一个尾节点
+      pre.right = null;
+      return head;
+    }
+  
