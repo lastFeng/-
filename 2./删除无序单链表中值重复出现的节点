@@ -1,0 +1,83 @@
+题目：
+  给定一个无序单链表的头节点head，删除其中值重复出现的节点
+  
+  请按照一下要求实现两种方法：
+    1. 如果链表长度为N，时间复杂度达到O(N)
+    2. 额外空间复杂度为O(1)
+    
+思路:
+  方法一：利用哈希表，时间复杂度达到O(N)，额外空间复杂度达到O（N）
+  1. 生成一个哈希表，因为头节点是不用删除的节点，所以首先将头节点的值放入哈希表。
+  2. 从头节点的下一个节点开始往后遍历节点，假设当前遍历到cur节点
+  先检查cur的值是否在哈希表中，如果在，则说明cur节点的值是之前出现过的，就将cur节点删除
+  删除的方式是将最近一个没有被删除的节点pre连接到cur的下一个节点，即pre.next = cur.next;
+  如果不在，将cur节点的值加入到哈希表中，同时令pre=cur
+  
+// code java
+public class Node{
+  public int value;
+  public Node next;
+  
+  public Node(int data){
+    this.value = data;
+  }
+}
+
+public void removeRep1(Node head){
+  // 链表为空
+  if(head == null){
+    return;
+  }
+  
+  // 建立哈希表
+  HashSet<Integer> set = new HashSet<>();
+  // 删除点的前一个节点
+  Node pre = head;
+  Node cur = head.next;
+  // 将头节点加入哈希表
+  set.add(head.value);
+  
+  while(cur != null){
+    // 重复值，删除
+    if(set.contains(cur.value){
+      pre.next = cur.next;
+    }
+    // 不是重复节点，加入哈希表中
+    else{
+      set.add(cur.value);
+    }
+    cur = cur.next;
+  }
+}
+
+  方法二：类似选择排序的过程，时间复杂度为O(N^2)，额外空间复杂度为O(1)
+  1. 选择头节点，然后判断后面的节点是否有重复值，删除
+  2. 选择第二个节点，然后判断之后的节点是否有重复，删除
+  ...
+  直到倒数第二个节点即结束
+  
+  // code java
+  public void removeRep2(Node head){
+
+    Node cur = head;
+    Node pre = null;
+    Node next = null;
+    while(cur !=null){
+      pre = cur;
+      next = cur.next;
+      // 查找之后的节点是否存在重复值
+      while(next != null){
+        // 删除重复节点
+        if(cur.value == next.value){
+          pre.next = next.next;
+        }
+        // 前级节点更新
+        else{
+          pre = next;
+        }
+        next = next.next;
+      }
+      cur = cur.next;
+    }
+  }
+  
