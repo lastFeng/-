@@ -59,3 +59,71 @@
       queue.offer(head);
       inOrderToQueue(head.right, queue);
     }
+    
+  方法二：利用递归函数，除此之外不使用任何容器的方法。时间复杂度为O(N)，额外空间复杂度为O(1)。h为树的高度
+    1. 实现递归函数process。process的功能是将一颗二叉树转换为一个结构有点特殊的有序双向链表。
+    结构特殊是指这个双向链表尾节点的right指针指向该双向链表的头节点。函数process最终返回这个链表的尾节点。（如此可以快速找到双向链表的头尾两端）
+    2. 通过process过程得到的双向链表是尾节点的right指针连向头结点的结构。所以最终需要将尾节点的right指针设置为null来让双向链表变成正常的样子。
+    
+    // code java
+    public Node convert2(Node head){
+      // 为空时
+      if(head==null){
+        return null;
+      }
+      
+      // 返回转换成的双链表的尾节点
+      Node last = process(head);
+      
+      // 将尾节点指向头结点的值赋值为空
+      head = last.right;
+      last.right = null;
+      return head;
+    }
+    
+    public Node process(Node head){
+      if(head == null){
+        return null;
+      }
+      
+      // 根节点中左半边节点构建
+      Node leftE = process(head.left);
+      // 根节点中右半边节点构建
+      Node rightE = process(head.rihgt);
+      
+      // 左边开始
+      Node leftS = leftE != null ? leftE.right : null;
+      // 右边开始
+      Node rightS = rightE != null ? rightE.right : null;
+      
+      // 左右两边都有值
+      if(leftE != null && rightE != null){
+        leftE.right = head;
+        head.left = leftE;
+        head.right = rightS;
+        rightE.right = leftS;
+        return rightE;
+      }
+      // 左边不为空,head为尾节点
+      else if(leftE != null){
+        leftE.right = head;
+        head.left = leftE;
+        head.right = leftS;
+        return head;
+      }
+      // 右边不为空，startE为尾节点
+      else if(rightE != null){
+        head.right = rightS;
+        rightS.left = head;
+        rightE.right = head;
+        return rightE;
+      }
+      // 两边都为空，head为尾节点
+      else{
+        head.right = head;
+        return head;
+       }
+    }
+    
+    
+    
