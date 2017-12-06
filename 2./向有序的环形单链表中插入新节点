@@ -1,0 +1,46 @@
+题目：
+  一个环形单链表从头节点head开始不降序，同时由最后的节点指回头节点。
+  给定这样一个环形单链表的头节点head和一个整数num，请生成节点值为num的新节点，并插入到这个环形链表中，保证调整后的链表依然有序。
+  
+思路：
+  1. 生成节点值为num的新节点，记为node。
+  2. 如果链表为空，让node自己组成环形链表，然后直接返回node。
+  3. 如果链表不为空，令变量pre=head，cur=head.next，然后令pre和cur同步移动下去，如果遇到pre的节点值小于或等于num，
+  并且cur的节点值大于或等于num，说明node应该在pre节点和cur节点之间插入，插入node，然后返回head即可。
+  4. 如果pre和cur转了一圈，这期间都没有发现步骤3所说的情况，说明node应该应该插入到头节点前面，然后返回node节点。
+  
+// code java
+public class Node{
+  public int value;
+  public Node next;
+  
+  public Node(int data){
+    this.value = data;
+  }
+}
+
+public Node insertNum(Node head, int num){
+  Node node = new Node(num);
+  
+  // 链表为空，说明输入的数为新节点
+  if(head == null){
+    node.next = node;
+    return node;
+  }
+  
+  Node pre = head;
+  Node cur = pre.next;
+  While(cur != head){
+    // 找到要插入的节点位置
+    if(pre.value <= num && cur.value >= num){
+      break;
+    }
+    pre = cur;
+    cur = cur.next;
+  }
+  pre.next = node;
+  node.next = cur;
+  
+  // 判断是否在头节点前插入
+  return head.value < num ? head : node;
+}
