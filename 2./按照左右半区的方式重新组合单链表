@@ -1,0 +1,55 @@
+题目：
+  给定一个单链表的头部节点head，链表长度为N，如果N为偶数，那么前N/2个节点算作左半区，后N/2个节点算作右半区；
+  如果N为奇数，前N/2个节点算作左半区，后N/2+1个节点算作右半区。
+  左半区从左到右依次记为：L1->L2->...，右半区从左到右依次记为R1->R2->...
+  将单链表调整成L1->R1->L2->R2->...的形式。
+  
+思路：
+本题主要在于分离左右半区。
+  1. 如果链表为空或长度为1，不用调整
+  2. 链表长度大于1时，遍历一遍找到左半区的最后一个节点，记为mid；（从长度为2开始，长度每增加2，mid往后移动一个节点）
+  3. 遍历一遍找到mid之后，分离左右半区，分别记为left(head)和right(mid.next)
+  4 将两个链表按要求合并即可。
+  
+// code java
+public class Node{
+  public int value;
+  public Node next;
+  
+  public Node(int data){
+    this.value = data;
+  }
+}
+
+public void relocate(Node head){
+  // 不需要调整的情况
+  if(head == null || head.next == null){
+    return ;
+  }
+  
+  Node mid = head;
+  Node right = head.next;
+  // 找到左半区最后一个节点
+  while(right.next != null && right.next.next != null){
+    mid = mid.next;
+    right = right.next.next;
+  }
+  // right指向右半区头结点
+  right = mid.next;
+  // 左半区尾节点指向null，此时head即为左半区头结点
+  mid.next = null;
+  // 按要求合并
+  mergeLR(head, right);
+}
+
+public void mergeLR(Node left, Node right){
+  Node next = null;
+  while(left.next != null){
+    next = left.next;
+    left.next = right;
+    right = right.next;
+    left = next;
+  }
+  // left可以剩下一个，而right可能剩下一个或者两个，都连接到left后面
+  left.next = right;
+}
