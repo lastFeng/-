@@ -1,0 +1,84 @@
+题目：
+  用递归和非递归的方式，实现二叉树先序、中序和后序遍历。打印所有的节点
+  
+思路：
+  递归实现遍历如下代码：
+  
+// code java
+
+ public class Node{
+  public int value;
+  public Node left;
+  public Node right;
+  
+  public Node(int data){
+    this.value = data;
+  }
+ }
+ 
+ // 先序遍历（根 左 右）
+ public void preOrderPecur(Node head){
+  if(head == null){
+    return;
+  }
+  
+  System.out.print(head.value + " ");
+  preOrderRecur(head.left);
+  preOrderRecur(head.right);
+ }
+ 
+ // 中序遍历 （左 根 右）
+ public void inOrderRecur(Node head){
+  if(head == null){
+    return;
+  }
+  
+  inOrderRecur(head.left);
+  System.out.print(head.value+ " ");
+  inOrderRecur(head.right);
+ }
+ 
+ // 后序遍历 （左 右 根）
+ public void posOrderRecur(Node head){
+  if(head == null){
+    return;
+  }
+  posOrderRecur(head.left);
+  posOrderRecur(head.right);
+  System.out.print(head.value + " ");
+ }
+ 
+ 
+ // 非递归思路：
+  用递归方法解决的问题都能用非递归的方法实现。这是因为递归方法无非是利用函数栈来保存信息，
+  如果用自己申请的数据结构来代替函数栈，也可以实现相同的功能。
+  
+  先序遍历：
+    1. 申请一个新的栈，记为stack。然后将头结点head压入栈中。
+    2. 从stack中弹出栈顶节点，记为cur，然后打印cur节点的值，再将节点cur的右孩子（不为空的话）先压入栈stack中，最后将cur的左孩子（不为空）压入栈
+    3. 不断重复2，直到stack为空，全部过程结束。
+    
+  // code java
+  public void preOrderUnRecur(Node head){
+    System.out.print("pre-order: ");
+    
+    if(head != null){
+      Stack<Node> stack = new Stack<>();
+      stack.push(head);
+      
+      while(!stack.isEmpty()){
+        head = stack.pop();
+        // 打印节点
+        System.outprint(head.value + " ");
+        // 先将右节点压入（不为空）
+        if(head.right != null){
+          stack.push(head.right);
+        }
+        // 左节点压入
+        if(head.left != null){
+          stack.push(head.left)
+        }
+      }
+    }
+    System.out.pirntln();
+  }
