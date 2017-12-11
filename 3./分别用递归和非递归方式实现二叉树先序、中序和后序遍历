@@ -82,3 +82,106 @@
     }
     System.out.pirntln();
   }
+  
+  // 中序遍历
+  1. 申请一个新的栈，stack。初始时，令变量cur=head。
+  2. 先把cur节点压入栈中，对以cur节点为头的整棵子树来说，依次把左边界压入栈中
+  3. 不断重复步骤2，直到发现cur为空，此时从stack中弹出一个节点，记为node。打印node值，并让cur=node.right，然后继续重复2
+  4. 当stack为空且cur为空时，整个过程停止。
+  
+  // code java
+  public void inOrderUnRecur(Node head){
+    System.out.print("in-Order: ");
+    
+    if(head != null){
+      Stack<Node> stack = new Stack<>();
+      
+      while(!stack.isEmpty() && head != null){
+        if(head != null){
+          stack.push(head);
+          head = head.left;
+        }
+        else{
+          head = stack.pop();
+          System.out.print(head.value + " ");
+          head = head.right;
+        }
+      }
+    }
+    
+    System.out.println();
+  }
+
+  // 后序遍历
+  方法一：
+  1. 申请一个栈，记为s1，然后将头节点head压入s1中。
+  2. 从s1中弹出节点记为cur，然后依次将cur的左孩子和右孩子压入s1中。
+  3. 在整个过程中，每一个从s1中弹出的节点都放入s2中。
+  4. 不断重复步骤2和步骤3，直到s1为空，过程停止。
+  5 从s2中依次弹出节点并打印，打印顺序就是后序遍历的顺序。
+  
+  // code java
+  public void posOrderUnRecur(Node head){
+    System.out.print("post-order: ");
+    
+    if(head != null){
+      Stack<Node> s1 = new Stack<>();
+      Stack<Node> s2 = new Stack<>();
+      
+      s1.push(head);
+      while(!s1.isEmpty()){
+        head = s1.pop();
+        s2.push(head);
+        
+        if(head.left != null){
+          s1.push(head.left);
+        }
+        
+        if(head.right != null){
+          s1.push(head.right);
+        }
+      }
+      
+      while(!s2.isEmpty()){
+        System.out.print(s2.pop() + " ");
+      }
+    }
+    
+    System.out.println();
+  }
+  
+  方法二：
+    1. 申请一个栈，stack，将头节点压入stack，同时设置两个变量h和c。在整个流程中，h代表最近一次弹出并打印的节点，c代表stack的栈顶节点。
+    初始时h为头节点，c为null。
+    2. 每次令c等于当前stack的栈顶节点，但是不从stack中弹出，此时分以下三种情况。
+      1）如果c的左孩子不为null，并且h不等于c的左孩子，也不等于c的右孩子，则把c的左孩子压入stack中。
+      2）如果条件1）不成立，并且c的右孩子不为null，h不等于c的右孩子，则把c的右孩子压入stack中。
+      3）如果1）和2)都不成立，说明c的左孩子和右孩子都处理完毕，那么弹出c并打印，令h=c；
+    3. 重复步骤2，直到stack为空。
+    
+    // code java
+    public void posOrderUnRecur(Node head){
+      System.out.print("pos-order: ");
+      
+      if(head != null){
+        Stack<Node> stack = new Stack<>();
+        
+        stack.push(head);
+        
+        while(!stack.isEmpty()){
+          c = stack.peek();
+          if(c.left != null && head != c.left){
+            stack.push(c.left);
+          }
+          else if(c.right != null && head != c.right){
+            stack.push(c.right);
+          }
+          else{
+            System.out.print(stack.pop().value + " ");
+            head = c;
+          }
+        }
+      }
+      
+      System.out.println();
+    }
