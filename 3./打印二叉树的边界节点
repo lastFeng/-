@@ -96,4 +96,49 @@
   }
   
   标准二：
-  1. 从头节点开始往下寻找，只要找到第一个既是左孩子，又是右孩子的节点，记为h，则进入步骤2.
+  1. 从头节点开始往下寻找，只要找到第一个既是左孩子，又是右孩子的节点，记为h，则进入步骤2.在这个过程中，找过的节点都打印。
+  2. h的左子树先进入步骤3的打印过程：h的右子树再进入步骤4打印过程；最后返回。
+  3. 打印左边界的延伸路径以及h左子树上所有的叶子节点
+  4. 打印右边界的延伸路径以及h右子树上所有的叶子节点。
+  
+  public void printEdge2(Node head){
+    if(head == null){
+      return;
+    }
+    
+    System.out.print(head.value + " ");
+    
+    if(head.left != null && head.right != null){
+      printLeftEdge(head.left, true);
+      printRightEdge(head.right, true);
+    }
+    else{
+      printEdge2(head.left != null ? head.left : head.right);
+    }
+    System.out.println();
+  }
+  
+  public void printLeftEdge(Node h, boolean print){
+    if(h == null){
+      return;
+    }
+    
+    if(print || (h.left==null && h.right==null)){
+      System.out.print(h.value + " ");
+    }
+    printLeftEdge(h.left, print);
+    printLeftEdge(h.right, print && h.left==null?true: false);
+  }
+  
+  public void printRightEdge(Node h, boolean print){
+    if(h == null){
+      return;
+    }
+   
+    printRightEdge(h.left, print && h.right==null ? true : false);
+    printRightEdge(h.right, print);
+    
+    if(print || (h.left==null && h.right==null)){
+      System.out.print(h.value + " ");
+    }
+  }
