@@ -1,0 +1,111 @@
+题目：
+  二叉树被记录成文件的过程叫作二叉树的序列化，通过文件内容重建原来二叉树的过程叫做二叉树的反序列化。
+  
+思路：
+方法一：通过先序遍历实现序列化和反序列化
+  "#" 代表节点为空
+  "!" 代表值的结束
+  
+  public String serialByPre(Node head){
+    if(head==null){
+      return "#!"
+    }
+    
+    String res = head.value + "!";
+    res += serialByPre(head.left);
+    res += serialByPre(head.right);
+  }
+  
+  public Node reconByPreString(String preStr){
+    String[] values = preStr.split("!");
+    Queue<String> queue = new LinkedList<>();
+    for(int i=0; i<values.length; i++){
+      queue.offer(values[i]);
+    }
+    return reconPreOrder(queue);
+  }
+  
+  public Node reconPreOrder(Queue<String> queue){
+    String value = queue.poll();
+    
+    if(value.equals("#")){
+      return null;
+    }
+    
+    Node head = new Node(Integer.valueOf(value));
+    head.left = reconPreOrder(queue);
+    head.right = reconPreOrder(queue);
+    
+    return head;
+  }
+  
+  方法二：层遍历实现序列化和反序列化
+  public String serialByLevel(Node head){
+    if(head == null){
+      return "#!";
+    }
+    
+    // 根节点加入
+    String res = head.value + "!";
+    Queue<Node> queue = new LinkedList<>();
+    queue.offer(head);
+    while(!queue.isEmpty()){
+      head = queue.poll();
+      
+      // 节点左子树存在，进入队列
+      if(head.left != null){
+        res += head.left.value + "!";
+        queue.offer(head.left);
+      }
+      // 不存在
+      else{
+        res += "#!";
+      }
+      // 节点右节点存在，进入队列
+      if(head.right != null){
+        res += head.right.value + "!";
+        queue.offer(head.right);
+      }
+      // 不存在
+      else{
+        res += "#!"
+      }
+    }
+    return res;
+  }
+  
+  反序列化：
+  public Node reconByLevelString(String levelStr){
+    // 分解字符
+    String[] values = levelStr.split("!");
+    int index = 0;
+    Node head = generateNodeByStrintg(values[index++]);
+    Queue<Node> queue = new LinkedList<>();
+    
+    if(head != NULL){
+      queue.offer(head);
+    }
+    
+    Node node = null;
+    while(!queue.isEmpty()){
+      node = queue.poll();
+      node.left = generateNodeByStrintg(values[index++]);
+      node.right = generateNodeByStrintg(values[index++]);
+      
+      if(node.left!=null){
+        queue.offer(node.left);
+      }
+      if(node.right!=null){
+        queue.offer(node.right);
+      }
+    }
+    return head;
+  }
+  
+  public Node generateNodeByString(String val){
+    if(val.equals("#")){
+      return null;
+    }
+    return new Node(Integer.valueOf(val));
+  }
+    
